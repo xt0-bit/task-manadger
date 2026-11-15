@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         taskListContainer
             .querySelectorAll('input[type="checkbox"]:checked')
             .forEach(checkbox => {
-                checkbox.parentElement.parentElement.remove();
+                checkbox.closest('.task-item').remove();
             });
         updateClearButton();
         updateEmptyState();
@@ -77,6 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    taskListContainer.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (!deleteBtn) return;
+
+        deleteBtn.closest('.task-item').remove();
+        updateClearButton();
+        updateEmptyState();
+    });
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -86,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!titleText) return;
 
         const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
 
         const leftSubDiv = document.createElement('div');
         const checkbox = document.createElement('input');
@@ -97,11 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
         leftSubDiv.appendChild(checkbox);
         leftSubDiv.appendChild(span);
 
+        const rightSubDiv = document.createElement('div');
+        rightSubDiv.className = 'task-right';
+
         const dateSubDiv = document.createElement('div');
         dateSubDiv.textContent = formatDate(rawDate);
 
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '✕';
+        deleteBtn.setAttribute('aria-label', 'Видалити завдання');
+
+        rightSubDiv.appendChild(dateSubDiv);
+        rightSubDiv.appendChild(deleteBtn);
+
         taskItem.appendChild(leftSubDiv);
-        taskItem.appendChild(dateSubDiv);
+        taskItem.appendChild(rightSubDiv);
 
         taskListContainer.appendChild(taskItem);
 
